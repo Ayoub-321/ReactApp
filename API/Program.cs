@@ -1,6 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Persistance;
 using Persistence;
+using AutoMapper;
+
+using MediatR;
+using Application.Activities;
+using Application.Core;
+using API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,12 +16,14 @@ string connString = builder.Configuration.GetConnectionString("DefaultConnection
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddDbContext<Persistance.DataContext>(x =>{x.UseSqlite(connString);});
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 
 var app = builder.Build();
 
@@ -41,6 +49,8 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
 
