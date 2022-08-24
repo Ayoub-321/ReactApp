@@ -13,13 +13,14 @@ function App() {
   const location = useLocation();
   return (
     <>
-      <Route path='/' element={<HomePage />}/>
+      {/* <Route path='/' element={<HomePage />}/> */}
       
         
           
             <NavBar />
               <Container style={{marginTop: '7em'}}>
               <Routes>
+              <Route path='/' element={<HomePage />}/>
                 <Route path='/activities' element={<ActivityDashboard />}/>
                 <Route   path='/activities/:id' element={<ActivityDetails />}/>
                 <Route key={location.key} path='/createActivity'element={<ActivityForm />}/>
