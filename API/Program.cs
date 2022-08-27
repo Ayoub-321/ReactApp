@@ -2,11 +2,12 @@ using Microsoft.EntityFrameworkCore;
 using Persistance;
 using Persistence;
 using AutoMapper;
-
+using API.Middleware;
 using MediatR;
 using Application.Activities;
 using Application.Core;
 using API.Extensions;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,7 @@ string connString = builder.Configuration.GetConnectionString("DefaultConnection
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddDbContext<Persistance.DataContext>(x =>{x.UseSqlite(connString);});
 
@@ -27,6 +29,8 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+
+app.UseMiddleware<ExceptionMiddleware>();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
