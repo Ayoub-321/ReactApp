@@ -8,6 +8,8 @@ using Application.Activities;
 using Application.Core;
 using API.Extensions;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Identity;
+using Domain;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,8 @@ builder.Services.AddControllers();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddDbContext<Persistance.DataContext>(x =>{x.UseSqlite(connString);});
+
+builder.Services.AddIdentityServices(builder.Configuration);
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -42,9 +46,10 @@ if (app.Environment.IsDevelopment())
 using (var scope = app.Services.CreateScope())
 {
     var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
     var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
     dataContext.Database.Migrate();
-    await Seed.SeedData(dataContext);
+    await Seed.SeedData(dataContext, userManager);
 
     // var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
     // var identityContext = scope.ServiceProvider.GetRequiredService<AppIdentityDbContext>();
@@ -55,6 +60,8 @@ using (var scope = app.Services.CreateScope())
 app.UseHttpsRedirection();
 
 app.UseCors("CorsPolicy");
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
